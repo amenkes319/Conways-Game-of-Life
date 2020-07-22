@@ -86,11 +86,12 @@ public class Game implements Runnable
 			
 			if (timer >= 1000000000)
 			{
-				System.out.println("Ticks: " + ticks);
+//				System.out.println("Ticks: " + ticks);
 				ticks = 0;
 				timer = 0;
 			}
 		}
+		
 		stop();
 	}
 	
@@ -100,7 +101,7 @@ public class Game implements Runnable
 			return;
 		
 		this.bRunning = true;
-		thread = new Thread(this);
+		thread = new Thread(instance);
 		thread.start();
 	}
 	
