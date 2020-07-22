@@ -41,8 +41,40 @@ public class Game implements Runnable
 		{
 			for(int j = 0; j < grid[0].length; j++)
 			{
-				
+				if (i == 0)
+				{
+					if (j == 0)
+					{
+						
+					}
+					else if (j == grid[0].length - 1)
+					{
+						
+					}
+					else
+					{
+						
+					}
+				}
+				else if (i == grid.length - 1)
+				{
+					if (j == 0)
+					{
+						
+					}
+					else if (j == grid[0].length - 1)
+					{
+						
+					}
+					else
+					{
+						
+					}
+				}
+				else
+				{
 					
+				}
 			}
 		}
 	}
