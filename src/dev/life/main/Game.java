@@ -20,6 +20,8 @@ public class Game implements Runnable
 	private Graphics g;
 	
 	private MouseInput mouseInput;
+	
+	private Tile[][] grid;
 
 	public Game(String title, int width, int height)
 	{
@@ -28,8 +30,21 @@ public class Game implements Runnable
 		
 		this.display = new Display(title, WIDTH, HEIGHT);
 		this.mouseInput = new MouseInput();
+		this.grid = new Tile[20][20];
 		
 		display.getCanvas().addMouseListener(mouseInput);
+	}
+	
+	public void updateGrid()
+	{
+		for(int i = 0; i < grid.length; i++)
+		{
+			for(int j = 0; j < grid[0].length; j++)
+			{
+				
+					
+			}
+		}
 	}
 	
 	private void tick()
@@ -60,7 +75,7 @@ public class Game implements Runnable
 
 	public void run()
 	{
-		int fps = 60;
+		int fps = 144;
 		double timePerTick = 1000000000 / fps;
 		double delta = 0;
 		long now;
