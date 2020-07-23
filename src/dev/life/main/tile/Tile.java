@@ -6,11 +6,11 @@ import java.awt.Graphics;
 public class Tile 
 {
 	private int x, y, width, height;
-	protected boolean bAlive;
+	private boolean bAlive;
 	
 	public Tile(int x, int y, int width, int height)
 	{
-		bAlive = Math.random() > .5;
+		bAlive = false;
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -45,6 +45,16 @@ public class Tile
 	public int getHeight()
 	{
 		return height;
+	}
+	
+	public boolean withinX(int x)
+	{
+		return x >= this.x && x <= this.x + this.width;
+	}
+	
+	public boolean withinY(int y)
+	{
+		return y >= this.y && y <= this.y + this.height;
 	}
 
 	public void tick()

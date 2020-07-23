@@ -42,10 +42,12 @@ public class Game implements Runnable
 		this.display = new Display(title, width, height);
 		this.mouseInput = new MouseInput(instance);
 		
-		this.grid = new Grid(this, 30);
+		this.grid = new Grid(instance, 36);
 		
 		display.getCanvas().addMouseListener(mouseInput);
+		display.getCanvas().addMouseMotionListener(mouseInput);
 	}
+	
 	
 	public int getTicks()
 	{
@@ -60,6 +62,11 @@ public class Game implements Runnable
 	public void setState(State state)
 	{
 		this.state = state;
+	}
+	
+	public Grid getGrid()
+	{
+		return this.grid;
 	}
 	
 	private void tick()

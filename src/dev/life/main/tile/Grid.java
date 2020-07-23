@@ -10,10 +10,10 @@ public class Grid
 	private Tile[][] grid;
 	private Game game;
 	
-	public Grid(Game game, int size)
+	public Grid(Game game, int length)
 	{
 		this.game = game;
-		grid = new Tile[size][size];
+		grid = new Tile[length][length];
 		for(int i = 0; i < grid.length; i++)
 		{
 			for(int j = 0; j < grid[0].length; j++)
@@ -21,6 +21,16 @@ public class Grid
 				grid[i][j] = new Tile(i * 25 + 50, j * 25 + 50, 20, 20);
 			}
 		}
+	}
+	
+	public Tile[][] getTiles()
+	{
+		return this.grid;
+	}
+	
+	public int getLength()
+	{
+		return this.grid.length;
 	}
 	
 	public void tick()
@@ -51,6 +61,11 @@ public class Grid
 				grid[i][j].render(g);
 			}
 		}
+	}
+	
+	public void checkGridClicked()
+	{
+		
 	}
 	
 	public void updateGrid()
