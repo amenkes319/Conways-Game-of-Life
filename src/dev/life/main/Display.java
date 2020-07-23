@@ -46,12 +46,6 @@ public class Display
 		
 		this.frame.add(this.canvas);
 		this.frame.pack();
-
-		this.frame.setLayout(new FlowLayout());
-		
-		Handler handler = new Handler();
-		button.addActionListener(handler);
-		frame.add(button);
 	}
 	
 	public Canvas getCanvas()
