@@ -4,130 +4,70 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
+import dev.life.main.display.Display;
+import dev.life.main.input.MouseInput;
+import dev.life.main.tile.Grid;
+import dev.life.main.tile.Tile;
+
 public class Game implements Runnable
 {
 	private final Game instance = this;
 	
 	private Display display;
 	
-	public final int WIDTH, HEIGHT;
+	public int width, height;
 	
 	private Thread thread;
 	
+	private int ticks;
+	
 	private boolean bRunning;
+	private State state;
 
 	private BufferStrategy bs;
 	private Graphics g;
 	
 	private MouseInput mouseInput;
 	
-	private Tile[][] grid;
+	private Grid grid;
 
 	public Game(String title, int width, int height)
 	{
-		this.WIDTH = width;
-		this.HEIGHT = height;
+		state = State.STOP;
+		this.width = width;
+		this.height = height;
 		
-		this.display = new Display(title, WIDTH, HEIGHT);
-		this.mouseInput = new MouseInput();
-		this.grid = new Tile[20][20];
-		for(int i = 0; i < grid.length; i++)
-		{
-			for(int j = 0; j < grid[0].length; j++)
-			{
-				grid[i][j] = new Tile();
-			}
-		}
+		this.ticks = 0;
+		
+		this.display = new Display(title, width, height);
+		this.mouseInput = new MouseInput(instance);
+		
+		this.grid = new Grid(this, 30);
+		
 		display.getCanvas().addMouseListener(mouseInput);
 	}
 	
-	public void updateGrid()
+	public int getTicks()
 	{
-		Tile[][] temp = new Tile[grid.length][grid[0].length];
-		for(int i = 0; i < grid.length; i++)
-		{
-			for(int j = 0; j < grid[0].length; j++)
-			{
-				temp[i][j] = new Tile();
-				int neighbors = 0;
-				if (i == 0)
-				{
-					if (j == 0)
-					{
-						neighbors += grid[i + 1][j].getAlive() ? 1 : 0;
-						neighbors += grid[i][j + 1].getAlive() ? 1 : 0;
-						neighbors += grid[i + 1][j+ 1].getAlive() ? 1 : 0;
-					}
-					else if (j == grid[0].length - 1)
-					{
-						neighbors += grid[i][grid[0].length - 2].getAlive() ? 1 : 0;
-						neighbors += grid[i - 1][grid[0].length - 2].getAlive() ? 1 : 0;
-						neighbors += grid[i - 1][grid[0].length - 1].getAlive() ? 1 : 0;	
-					}
-					else
-					{
-						neighbors += grid[i][j + 1].getAlive() ? 1 : 0;
-						neighbors += grid[i][j - 1].getAlive() ? 1 : 0;
-						neighbors += grid[i - 1][j - 1].getAlive() ? 1 : 0;
-						neighbors += grid[i- 1][j].getAlive() ? 1 : 0;
-						neighbors += grid[i - 1][j + 1].getAlive() ? 1 : 0;
-					}
-				}
-				else if (i == grid.length - 1)
-				{
-					if (j == 0)
-					{
-						neighbors += grid[grid.length - 1][j + 1].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][j + 1].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][j].getAlive() ? 1 : 0;
-					}
-					else if (j == grid[0].length - 1)
-					{
-						neighbors += grid[grid.length - 1][grid[0].length - 2].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][grid[0].length - 2].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][grid[0].length - 1].getAlive() ? 1 : 0;
-					}
-					else
-					{
-						neighbors += grid[grid.length - 1][j - 1].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 1][j + 1].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][j].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][j - 1].getAlive() ? 1 : 0;
-						neighbors += grid[grid.length - 2][j + 1].getAlive() ? 1 : 0;
-					}
-				}
-				else
-				{
-					neighbors += grid[i - 1][j - 1].getAlive() ? 1 : 0;
-					neighbors += grid[i - 1][j].getAlive() ? 1 : 0;
-					neighbors += grid[i - 1][j + 1].getAlive() ? 1 : 0;
-					neighbors += grid[i][j + 1].getAlive() ? 1 : 0;
-					neighbors += grid[i - 1][j + 1].getAlive() ? 1 : 0;
-					neighbors += grid[i - 1][j].getAlive() ? 1 : 0;
-					neighbors += grid[i - 1][j - 1].getAlive() ? 1 : 0;
-					neighbors += grid[i][j - 1].getAlive() ? 1 : 0;
-				}
-				
-				if (grid[i][j].getAlive())
-				{
-					if(neighbors == 2 || neighbors == 3)
-						temp[i][j].setAlive(true);
-					else
-						temp[i][j].setAlive(false);
-				}
-				else
-				{
-					if (neighbors == 3)
-						temp[i][j].setAlive(true);
-				}
-			}
-		}
-		grid = temp;
+		return this.ticks;
+	}
+	
+	public State getState()
+	{
+		return this.state;
+	}
+	
+	public void setState(State state)
+	{
+		this.state = state;
 	}
 	
 	private void tick()
 	{
+		this.width = display.getFrame().getWidth();
+		this.height = display.getFrame().getHeight();
 		
+		grid.tick();
 	}
 	
 	private void render()
@@ -141,11 +81,19 @@ public class Game implements Runnable
 		
 		g = bs.getDrawGraphics();
 		
-		g.clearRect(0, 0, WIDTH, HEIGHT);
+		g.clearRect(0, 0, width, height);
 		
 		g.setColor(Color.DARK_GRAY);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
-		//render(g)
+		g.fillRect(0, 0, width, height);
+		
+		grid.render(g);
+		
+		g.setColor(Color.GREEN);
+		g.fillRect(50, 10, 50, 20);
+		g.setColor(Color.RED);
+		g.fillRect(130, 10, 50, 20);
+		g.setColor(Color.BLUE);
+		g.fillRect(210, 10, 50, 20);
 		
 		bs.show();
 		g.dispose();
@@ -159,7 +107,6 @@ public class Game implements Runnable
 		long now;
 		long lastTime = System.nanoTime();
 		long timer = 0;
-		int ticks = 0;
 		
 		while (this.bRunning)
 		{
@@ -214,9 +161,11 @@ public class Game implements Runnable
 		}
 	}
 	
+	
 	public static void main(String[] args)
 	{
-		Game game = new Game("Life", 1280, 720);
+		System.setProperty("sun.awt.noerasebackground", "true");
+		Game game = new Game("Life", 1280, 1080);
 		game.start();
 	}
 }
